@@ -2,6 +2,8 @@ import 'package:chopper/chopper.dart';
 import 'package:clean_arch2/core/data/remote/models/remote_login.dart';
 import 'package:clean_arch2/core/data/remote/models/remote_token.dart';
 import 'package:clean_arch2/core/data/remote/services/auth_service.dart';
+import 'package:clean_arch2/core/data/utils.dart';
+import 'package:clean_arch2/core/domain/failures.dart';
 
 class AuthRemote {
   ChopperClient _client;
@@ -10,20 +12,21 @@ class AuthRemote {
 
   Future<RemoteToken> login(String email, String password) async {
     final authService = _client.getService<AuthService>();
-    final response =
-        await authService.loginRequest(RemoteLogin(email, password));
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      final body = response.body;
-      if (body != null)
-        return RemoteToken.fromJson(body);
-      else
-        throw Exception('Failed to login');
-    } else {
-      // in real world app we should raise a specific type Exception
-      throw Exception('Failed to login');
-    }
+    // send request and check connectivity
+    final response = await sendRequest(
+        authService.loginRequest(RemoteLogin(email, password)));
+
+    final body = handleFailures(
+        response: response,
+        emptyResponse: false,
+        additionalCheck: (Response response) {
+          if (response.error
+              .toString()
+              .contains("Unable to log in with provided credentials"))
+            throw OtherFailure(WrongCredentials());
+          throw throw UnknownFailure();
+        })!;
+    return RemoteToken.fromJson(body);
   }
 }

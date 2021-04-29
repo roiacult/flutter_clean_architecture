@@ -27,7 +27,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .build(LoginParam(email: event.email, password: event.password));
       yield LogedIn();
     } on Exception catch (e) {
-      yield AuthFailure();
+      print("failure is $e");
+      yield AuthFailure(e);
     }
   }
 }

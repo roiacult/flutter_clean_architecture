@@ -8,7 +8,11 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthFailure extends AuthState {}
+class AuthFailure extends AuthState {
+  Exception failure;
+
+  AuthFailure(this.failure);
+}
 
 class LogedIn extends AuthState {}
 
