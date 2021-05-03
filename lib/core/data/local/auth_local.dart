@@ -18,6 +18,6 @@ class AuthLocal {
 
   Future<String> getToken() async {
     final _preferences = await StreamingSharedPreferences.instance;
-    return _preferences.getString(TOKEN_KEY, defaultValue: "").key;
+    return _preferences.getString(TOKEN_KEY, defaultValue: "").getValue();
   }
 }

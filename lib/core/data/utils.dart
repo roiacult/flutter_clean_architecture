@@ -29,3 +29,9 @@ Future<Response> sendRequest(Future<Response> future) async {
     throw NetworkFailure();
   }
 }
+
+extension page_extension on String {
+  int toPage() {
+    return 0;
+  }
+}
